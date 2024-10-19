@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  SUPER_ADMIN
+  ADMIN
+  EMPLOYEE
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique
+  name            String?
+  password        String
+  company         Company?          @relation(fields: [companyId], references: [id])
+  companyId       Int?
+  employee        Employee?
+  employeeId      Int?              @unique
+  role            Roles
+  actived         Boolean?          @default(true)
+  refreshToken    String?
+  createdAt       DateTime?         @default(now())
+}
+
+model Company {
+  id      Int      @id @default(autoincrement())
+  name    String?
+  phone   String?
+  cnpj    String?
+  users   User[]
+  actived Boolean? @default(true)
+}
+
+model Employee {
+  id                           Int              @id @default(autoincrement())
+  fullName                     String
+  dateOfBirth                  DateTime         @db.Date
+  position                     String?
+  level                        String?
+  rg                           String
+  cpf                          String
+  uf                           String
+  emissionAgency               String
+  emissionDate                 DateTime         @db.Date
+  mothersName                  String
+  jobFormat                    String
+  admissionDate                DateTime         @db.Date
+  pisNumber                    String
+  personalEmail                String?
+  corporateEmail               String?
+  phone                        String?
+  notes                        String?
+  salaire                      String?
+  address                      Address?
+  active                       Boolean?
+  imgUrl                       String
+  vestingPeriods               VestingPeriod[]
+  vacations                    VacationPeriod[]
+  documents                    Document[]
+  equipmentOrders              EquipmentOrder[] @relation("EmployeeEquipmentOrders")
+  user                         User?            @relation(fields: [userId], references: [id])
+  userId                       Int?             @unique
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  street       String
+  cep          String
+  number       String
+  neighborhood String
+  city         String
+  state        String
+  Employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId   Int      @unique
+}
+
+model VestingPeriod {
+  id             Int              @id @default(autoincrement())
+  employeeId     Int
+  Employee       Employee         @relation(fields: [employeeId], references: [id],onDelete: Cascade)
+  daysOfLaw      Decimal
+  startDate      DateTime
+  endDate        DateTime?
+  VacationPeriod VacationPeriod[]
+}
+
+model VacationPeriod {
+  id            Int           @id @default(autoincrement())
+  vacationId    Int
+  VestingPeriod VestingPeriod @relation(fields: [vacationId], references: [id])
+  startDate     DateTime
+  endDate       DateTime
+  status        String
+  daysOf        Float
+  Employee      Employee?     @relation(fields: [employeeId], references: [id],onDelete: Cascade)
+  employeeId    Int?
+}
+
+model Document {
+  id           Int      @id @default(autoincrement())
+  name         String
+  type         String
+  dateOfUpload DateTime
+  url          String
+  employeeId   Int
+  Employee     Employee @relation(fields: [employeeId], references: [id],onDelete: Cascade)
+}
+
+model Equipment {
+  id        Int              @id @default(autoincrement())
+  name      String
+  description String
+  isInOrder Boolean          @default(false)
+  order     EquipmentOrder[]
+}
+
+model EquipmentOrder {
+  id                   Int       @id @default(autoincrement())
+  name                 String
+  deliveryDate         DateTime
+  returnDate           DateTime?
+  document             String
+  observation          String
+  equipmentId          Int
+  equipment            Equipment @relation(fields: [equipmentId], references: id)
+  employeeId           Int
+  employee             Employee  @relation("EmployeeEquipmentOrders", fields: [employeeId], references: id,onDelete: Cascade)
+}
+
+model Events {
+  id        Int              @id @default(autoincrement())
+  name      String
+  description String
+  date      DateTime    
+  time      String
+}
+
+model Alerts {
+  id        Int              @id @default(autoincrement())
+  name      String
+  description String
+}

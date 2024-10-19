@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "VacationPeriod" ALTER COLUMN "daysOf" SET DATA TYPE DOUBLE PRECISION;

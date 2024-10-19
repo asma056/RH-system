@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Vacation" ALTER COLUMN "daysOfLaw" SET DATA TYPE DECIMAL(65,30);
