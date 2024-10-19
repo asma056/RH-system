@@ -1,4 +1,4 @@
- RH System:
+ RH System: It is the project of my final studies.
 
 ## Description
 The RH System is designed to streamline human resource management, providing functionalities for user management, employee management, document handling, and event organization. The system is built with modern technologies to ensure scalability and performance.
